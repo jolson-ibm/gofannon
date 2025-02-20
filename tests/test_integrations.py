@@ -116,8 +116,14 @@ def test_bedrock_import():
                                     "schema": {
                                         "type": "object",
                                         "properties": {
-                                            "num1": {"type": "number"},
-                                            "num2": {"type": "number"}
+                                            "num1": {
+                                                "type": "number",
+                                                "description": "First number"
+                                            },
+                                            "num2": {
+                                                "type": "number",
+                                                "description": "Second number"
+                                            }
                                         },
                                         "required": ["num1", "num2"]
                                     }
@@ -137,4 +143,6 @@ def test_bedrock_import():
 
     assert tool.name == "bedrock_addition"
     assert "num1" in tool.definition['function']['parameters']['properties']
-    assert "num2" in tool.definition['function']['parameters']['properties']  
+    assert "num2" in tool.definition['function']['parameters']['properties']
+    assert tool.definition['function']['parameters']['properties']['num1']['description'] == "First number"
+    assert tool.definition['function']['parameters']['properties']['num2']['description'] == "Second number"

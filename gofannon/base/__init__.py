@@ -357,7 +357,7 @@ class BaseTool(ABC):
                     "properties": {
                         param: {
                             "type": props['type'],
-                            "description": props['description']
+                            "description": props.get('description', f"Parameter {param}")
                         }
                         for param, props in params['properties'].items()
                     },
