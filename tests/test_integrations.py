@@ -118,11 +118,11 @@ def test_bedrock_import():
                                         "properties": {
                                             "num1": {
                                                 "type": "number",
-                                                "description": "First number"
+
                                             },
                                             "num2": {
                                                 "type": "number",
-                                                "description": "Second number"
+                                                
                                             }
                                         },
                                         "required": ["num1", "num2"]
@@ -138,11 +138,11 @@ def test_bedrock_import():
     }
 
     # Use a concrete tool instead of BaseTool
-    tool = BaseTool()
+    tool = Addition()
     tool.import_from_bedrock(sample_tool)
 
     assert tool.name == "bedrock_addition"
     assert "num1" in tool.definition['function']['parameters']['properties']
     assert "num2" in tool.definition['function']['parameters']['properties']
-    assert tool.definition['function']['parameters']['properties']['num1']['description'] == "First number"
-    assert tool.definition['function']['parameters']['properties']['num2']['description'] == "Second number"
+    assert tool.definition['function']['parameters']['properties']['num1']['description'] == "The first number"
+    assert tool.definition['function']['parameters']['properties']['num2']['description'] == "The second number"
