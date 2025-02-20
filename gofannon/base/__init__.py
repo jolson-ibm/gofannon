@@ -47,6 +47,7 @@ class WorkflowContext:
         self.local_storage = Path.home() / ".llama" / "checkpoints"
         self.local_storage.mkdir(parents=True, exist_ok=True)
 
+
     def save_checkpoint(self, name="checkpoint"):
         if self.firebase_config:
             self._save_to_firebase(name)
@@ -86,6 +87,8 @@ class BaseTool(ABC):
         self._load_config()
         self._configure(**kwargs)
         self.logger.debug("Initialized %s tool", self.__class__.__name__)
+        self.name = kwargs.get('name', self.__class__.__name__.lower())
+        self.description = kwargs.get('description', "No description provided")
 
     def _configure(self, **kwargs):
         """Set instance-specific configurations"""

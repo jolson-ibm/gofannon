@@ -96,7 +96,7 @@ def test_bedrock_export(monkeypatch):
 
     assert bedrock_config["toolName"] == "addition"
     assert "num1" in bedrock_config["openAPISchema"]
-    assert "Lambda" in bedrock_config["lambdaArn"]
+    assert bedrock_config["lambdaArn"] == "arn:aws:lambda:us-east-1:123456789012:function:test"
 
 def test_bedrock_import():
     sample_tool = {
@@ -128,8 +128,9 @@ def test_bedrock_import():
         "lambdaArn": "arn:aws:lambda:us-east-1:123456789012:function:add"
     }
 
-    base_tool = BaseTool()
-    base_tool.import_from_bedrock(sample_tool)
+    tool = Addition()
+    tool.import_from_bedrock(sample_tool)
 
-    assert base_tool.name == "bedrock_addition"
-    assert "num1" in base_tool.definition['function']['parameters']['properties']
+    assert tool.name == "bedrock_addition"
+    assert "num1" in tool.definition['function']['parameters']['properties']
+    assert "num1" in tool.definition['function']['parameters']['properties']
