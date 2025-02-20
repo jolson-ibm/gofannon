@@ -89,6 +89,7 @@ class BaseTool(ABC):
         self.logger.debug("Initialized %s tool", self.__class__.__name__)
         self.name = kwargs.get('name', self.__class__.__name__.lower())
         self.description = kwargs.get('description', "No description provided")
+        self._definition = None
 
     def _configure(self, **kwargs):
         """Set instance-specific configurations"""
@@ -102,9 +103,28 @@ class BaseTool(ABC):
             self.api_key = ToolConfig.get(f"{self.API_SERVICE}_api_key")
 
     @property
-    @abstractmethod
     def definition(self):
-        pass
+        """Return the tool's definition"""
+        if self._definition is None:
+            # Provide a default definition if not set
+            self._definition = {
+                "type": "function",
+                "function": {
+                    "name": self.name,
+                    "description": self.description,
+                    "parameters": {
+                        "type": "object",
+                        "properties": {},
+                        "required": []
+                    }
+                }
+            }
+        return self._definition
+
+    @definition.setter
+    def definition(self, value):
+        """Set the tool's definition"""
+        self._definition = value
 
     @property
     def output_schema(self):
