@@ -367,7 +367,7 @@ class BaseTool(ABC):
         # Convert OpenAPI schema to Gofannon definition
         params = operation['requestBody']['content']['application/json']['schema']
 
-        self.definition = {
+        self._definition = {
             "type": "function",
             "function": {
                 "name": self.name,
