@@ -435,7 +435,7 @@ def lambda_handler(event, context):
 
         iam.create_role(
             RoleName=role_name,
-            AssumeRolePolicyDocument=json.dumps(assume_policy)
+            AssumeRolePolicyDocument=json.dumps(assume_policy))
 
         iam.attach_role_policy(
             RoleName=role_name,
