@@ -138,7 +138,7 @@ def test_bedrock_import():
     }
 
     # Use a concrete tool instead of BaseTool
-    tool = Addition()
+    tool = BaseTool()
     tool.import_from_bedrock(sample_tool)
 
     assert tool.name == "bedrock_addition"
