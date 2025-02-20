@@ -86,11 +86,14 @@ def test_cross_framework_roundtrip():
     assert exported_smol.forward(4, 5) == 9
 
 
+# tests/test_integrations.py
+
 def test_bedrock_export(monkeypatch):
     # Mock boto3 client
     monkeypatch.setenv("AWS_ACCESS_KEY_ID", "test")
     monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "test")
 
+    # Use a concrete tool instead of BaseTool
     tool = Addition()
     bedrock_config = tool.export_to_bedrock(lambda_arn="arn:aws:lambda:us-east-1:123456789012:function:test")
 
@@ -128,9 +131,10 @@ def test_bedrock_import():
         "lambdaArn": "arn:aws:lambda:us-east-1:123456789012:function:add"
     }
 
+    # Use a concrete tool instead of BaseTool
     tool = Addition()
     tool.import_from_bedrock(sample_tool)
 
     assert tool.name == "bedrock_addition"
     assert "num1" in tool.definition['function']['parameters']['properties']
-    assert "num1" in tool.definition['function']['parameters']['properties']
+    assert "num2" in tool.definition['function']['parameters']['properties']  
