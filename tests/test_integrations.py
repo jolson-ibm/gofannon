@@ -1,4 +1,5 @@
-# tests/test_integrations.py  
+# tests/test_integrations.py
+import json
 
 import pytest
 from gofannon.base import BaseTool
@@ -82,4 +83,53 @@ def test_cross_framework_roundtrip():
     assert imported_tool.name == "addition"
 
     exported_smol = native_tool.export_to_smolagents()
-    assert exported_smol.forward(4, 5) == 9  
+    assert exported_smol.forward(4, 5) == 9
+
+
+def test_bedrock_export(monkeypatch):
+    # Mock boto3 client
+    monkeypatch.setenv("AWS_ACCESS_KEY_ID", "test")
+    monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "test")
+
+    tool = Addition()
+    bedrock_config = tool.export_to_bedrock(lambda_arn="arn:aws:lambda:us-east-1:123456789012:function:test")
+
+    assert bedrock_config["toolName"] == "addition"
+    assert "num1" in bedrock_config["openAPISchema"]
+    assert "Lambda" in bedrock_config["lambdaArn"]
+
+def test_bedrock_import():
+    sample_tool = {
+        "toolName": "bedrock_addition",
+        "openAPISchema": json.dumps({
+            "openapi": "3.0.0",
+            "paths": {
+                "/add": {
+                    "post": {
+                        "description": "Add numbers",
+                        "requestBody": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "num1": {"type": "number"},
+                                            "num2": {"type": "number"}
+                                        },
+                                        "required": ["num1", "num2"]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }),
+        "lambdaArn": "arn:aws:lambda:us-east-1:123456789012:function:add"
+    }
+
+    base_tool = BaseTool()
+    base_tool.import_from_bedrock(sample_tool)
+
+    assert base_tool.name == "bedrock_addition"
+    assert "num1" in base_tool.definition['function']['parameters']['properties']

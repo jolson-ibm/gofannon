@@ -18,6 +18,13 @@ except ImportError:
     _HAS_SMOLAGENTS = False
 
 try:
+    import boto3
+    from botocore.exceptions import ClientError
+    _HAS_BEDROCK = True
+except ImportError:
+    _HAS_BEDROCK = False
+
+try:
     from langchain.tools import BaseTool as LangchainBaseTool
     from langchain.pydantic_v1 import BaseModel, Field
     from typing import Type, Optional
@@ -249,3 +256,202 @@ class BaseTool(ABC):
         # Instantiate and return the tool
         tool = ExportedTool()
         return tool
+
+    def export_to_bedrock(self, lambda_arn: str = None) -> dict:
+        """
+        Export tool as Bedrock Agent tool configuration
+        """
+        if not _HAS_BEDROCK:
+            raise RuntimeError("boto3 not installed. Install with `pip install boto3`")
+
+            # Generate OpenAPI schema
+        openapi_schema = self._generate_openapi_schema()
+
+        # Create tool configuration
+        tool_config = {
+            "toolName": self.name,
+            "description": self.definition['function']['description'],
+            "openAPISchema": json.dumps(openapi_schema),
+            "lambdaArn": lambda_arn or self._create_bedrock_lambda()
+        }
+
+        return tool_config
+
+    def _generate_openapi_schema(self) -> dict:
+        """Convert Gofannon definition to OpenAPI schema"""
+        params = self.definition['function']['parameters']
+
+        openapi_schema = {
+            "openapi": "3.0.0",
+            "info": {
+                "title": self.name,
+                "version": "1.0.0"
+            },
+            "paths": {
+                f"/{self.name}": {
+                    "post": {
+                        "description": self.definition['function']['description'],
+                        "requestBody": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            param: {
+                                                "type": props['type'],
+                                                "description": props['description']
+                                            }
+                                            for param, props in params['properties'].items()
+                                        },
+                                        "required": params.get('required', [])
+                                    }
+                                }
+                            }
+                        },
+                        "responses": {
+                            "200": {
+                                "description": "Successful operation",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "result": {"type": "string"}
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return openapi_schema
+
+    def import_from_bedrock(self, bedrock_tool: dict):
+        """
+        Import Bedrock tool configuration
+        """
+        schema = json.loads(bedrock_tool['openAPISchema'])
+        path = list(schema['paths'].keys())[0]
+        operation = schema['paths'][path]['post']
+
+        self.name = bedrock_tool['toolName']
+        self.description = operation['description']
+
+        # Convert OpenAPI schema to Gofannon definition
+        params = operation['requestBody']['content']['application/json']['schema']
+
+        self.definition = {
+            "type": "function",
+            "function": {
+                "name": self.name,
+                "description": self.description,
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        param: {
+                            "type": props['type'],
+                            "description": props['description']
+                        }
+                        for param, props in params['properties'].items()
+                    },
+                    "required": params.get('required', [])
+                }
+            }
+        }
+
+        # Create wrapper for Lambda execution
+        def bedrock_fn(**kwargs):
+            client = boto3.client('lambda')
+            response = client.invoke(
+                FunctionName=bedrock_tool['lambdaArn'],
+                Payload=json.dumps(kwargs)
+            )
+            return json.load(response['Payload'])
+
+        self.fn = bedrock_fn
+    # Add to BaseTool class in gofannon/base/__init__.py
+
+    def _create_bedrock_lambda(self) -> str:
+        """Create Lambda function for Bedrock integration"""
+        if not _HAS_BEDROCK:
+            raise RuntimeError("boto3 required for Lambda creation")
+
+        lambda_client = boto3.client('lambda')
+        role_arn = self._get_or_create_bedrock_role()
+
+        # Generate Lambda code
+        lambda_code = f'''  
+import json  
+from {self.__class__.__module__} import {self.__class__.__name__}  
+  
+def lambda_handler(event, context):  
+    tool = {self.__class__.__name__}()  
+    result = tool.fn(**event)  
+    return {{  
+        'statusCode': 200,  
+        'body': json.dumps({{'result': result}})  
+    }}  
+    '''
+
+        try:
+            response = lambda_client.create_function(
+                FunctionName=f"gofannon-{self.name}",
+                Runtime='python3.9',
+                Role=role_arn,
+                Handler='lambda_function.lambda_handler',
+                Code={
+                    'ZipFile': create_zip_package(lambda_code)
+                },
+                Description=f"Gofannon tool: {self.name}",
+                Timeout=30,
+                MemorySize=256
+            )
+            return response['FunctionArn']
+        except ClientError as e:
+            raise RuntimeError(f"Failed to create Lambda: {e}")
+
+    def _get_or_create_bedrock_role(self) -> str:
+        """Get or create IAM role for Bedrock integration"""
+        iam = boto3.client('iam')
+        role_name = 'gofannon-bedrock-execution-role'
+
+        try:
+            return iam.get_role(RoleName=role_name)['Role']['Arn']
+        except iam.exceptions.NoSuchEntityException:
+            assume_policy = {{
+                "Version": "2012-10-17",
+                "Statement": [
+                    {{
+                        "Effect": "Allow",
+                        "Principal": {{"Service": "bedrock.amazonaws.com"}},
+                        "Action": "sts:AssumeRole"
+                    }}
+                ]
+            }}
+
+        iam.create_role(
+            RoleName=role_name,
+            AssumeRolePolicyDocument=json.dumps(assume_policy)
+
+        iam.attach_role_policy(
+            RoleName=role_name,
+            PolicyArn='arn:aws:iam::aws:policy/AWSLambda_FullAccess')
+
+        return iam.get_role(RoleName=role_name)['Role']['Arn']
+
+# Helper function for AWS
+def create_zip_package(code: str) -> bytes:
+    """Create in-memory ZIP package for Lambda deployment"""
+    from io import BytesIO
+    import zipfile
+
+    buffer = BytesIO()
+    with zipfile.ZipFile(buffer, 'w') as z:
+        z.writestr('lambda_function.py', code)
+    buffer.seek(0)
+    return buffer.read()
+
