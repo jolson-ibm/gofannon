@@ -49,8 +49,11 @@ class IssLocator(BaseTool):
             "function": {
                 "name": self.name,
                 "description": "Returns the latitude / longitude of the current location of the International Space Station (ISS)",
-                "parameters": {},
-                "required": [],
+                "parameters": {
+                    "type" : "object",
+                    "properties" : {},
+                    "required": [],
+                },
             },
         }
 
