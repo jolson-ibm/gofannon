@@ -368,10 +368,10 @@ from {self.__class__.__module__} import {self.__class__.__name__}
 def lambda_handler(event, context):  
     tool = {self.__class__.__name__}()  
     result = tool.fn(**event)  
-    return {  
+    return {{  
         'statusCode': 200,  
-        'body': json.dumps({'result': result})  
-    }  
+        'body': json.dumps({{'result': result}})  
+    }}  
     '''
 
         try:
