@@ -25,6 +25,13 @@ export AWS_ACCESS_KEY_ID=<your-key>
 export AWS_SECRET_ACCESS_KEY=<your-secret>  
 ```
 
+### Setting the Region
+
+In the file `$HOME/.aws/config`
+```
+[default]
+region=<your region - ie us-east-1>
+```
 ## Exporting Tools to Bedrock
 
 Convert any Gofannon tool to a Bedrock-ready package:
