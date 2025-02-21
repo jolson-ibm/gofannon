@@ -287,7 +287,6 @@ class BaseTool(ABC):
         if not _HAS_BEDROCK:
             raise RuntimeError("boto3 not installed. Install with `pip install boto3`")
 
-            # Generate OpenAPI schema
         openapi_schema = self._generate_openapi_schema()
 
         # Create tool configuration
@@ -423,7 +422,7 @@ def lambda_handler(event, context):
         try:
             response = lambda_client.create_function(
                 FunctionName=f"gofannon-{self.name}",
-                Runtime='python3.9',
+                Runtime='python3.10',
                 Role=role_arn,
                 Handler='lambda_function.lambda_handler',
                 Code={

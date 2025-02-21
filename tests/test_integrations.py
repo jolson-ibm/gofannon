@@ -122,7 +122,7 @@ def test_bedrock_import():
                                             },
                                             "num2": {
                                                 "type": "number",
-                                                
+
                                             }
                                         },
                                         "required": ["num1", "num2"]
