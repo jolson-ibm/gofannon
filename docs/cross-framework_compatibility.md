@@ -55,3 +55,37 @@ The tests verify:
 3. Functionality equivalence
 4. Error handling for missing dependencies
 5. Round-trip conversions between frameworks
+
+## AWS Bedrock Integration
+
+```python  
+from gofannon.base import BaseTool  
+import boto3  
+  
+# Create Bedrock client  
+bedrock = boto3.client('bedrock-agent')  
+  
+# Convert to Bedrock Tool  
+base_tool = BaseTool()  
+bedrock_tool = base_tool.export_to_bedrock()  
+  
+# Create Bedrock Agent  
+response = bedrock.create_agent(  
+    agentName='GofannonAgent',  
+    foundationModel='anthropic.claude-v2',  
+    instruction='Use Gofannon tools for problem solving',  
+    agentResourceRoleArn='arn:aws:iam::123456789012:role/AmazonBedrockExecutionRoleForAgents',  
+    agentTools=[bedrock_tool]  
+)  
+  
+# Export entire function registry  
+all_tools = FunctionRegistry.get_tools()  
+bedrock_tools = [tool().export_to_bedrock() for tool in all_tools] 
+```
+
+Key Features:
+
+* Automatic OpenAPI schema generation
+* Lambda function packaging for tool execution
+* IAM role validation
+* Parameter type mapping between Gofannon and Bedrock

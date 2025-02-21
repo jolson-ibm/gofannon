@@ -1,4 +1,5 @@
-# tests/test_integrations.py  
+# tests/test_integrations.py
+import json
 
 import pytest
 from gofannon.base import BaseTool
@@ -82,4 +83,21 @@ def test_cross_framework_roundtrip():
     assert imported_tool.name == "addition"
 
     exported_smol = native_tool.export_to_smolagents()
-    assert exported_smol.forward(4, 5) == 9  
+    assert exported_smol.forward(4, 5) == 9
+
+
+# tests/test_integrations.py
+
+def test_bedrock_export(monkeypatch):
+    # Mock boto3 client
+    monkeypatch.setenv("AWS_ACCESS_KEY_ID", "test")
+    monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "test")
+
+    # Use a concrete tool instead of BaseTool
+    tool = Addition()
+    bedrock_config = tool.export_to_bedrock(lambda_arn="arn:aws:lambda:us-east-1:123456789012:function:test")
+
+    assert bedrock_config["toolName"] == "addition"
+    assert "num1" in bedrock_config["openAPISchema"]
+    assert bedrock_config["lambdaArn"] == "arn:aws:lambda:us-east-1:123456789012:function:test"
+

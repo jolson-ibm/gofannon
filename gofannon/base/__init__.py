@@ -18,6 +18,13 @@ except ImportError:
     _HAS_SMOLAGENTS = False
 
 try:
+    import boto3
+    from botocore.exceptions import ClientError
+    _HAS_BEDROCK = True
+except ImportError:
+    _HAS_BEDROCK = False
+
+try:
     from langchain.tools import BaseTool as LangchainBaseTool
     from langchain.pydantic_v1 import BaseModel, Field
     from typing import Type, Optional
@@ -39,6 +46,7 @@ class WorkflowContext:
         self.firebase_config = firebase_config
         self.local_storage = Path.home() / ".llama" / "checkpoints"
         self.local_storage.mkdir(parents=True, exist_ok=True)
+
 
     def save_checkpoint(self, name="checkpoint"):
         if self.firebase_config:
@@ -79,6 +87,9 @@ class BaseTool(ABC):
         self._load_config()
         self._configure(**kwargs)
         self.logger.debug("Initialized %s tool", self.__class__.__name__)
+        self.name = kwargs.get('name', self.__class__.__name__.lower())
+        self.description = kwargs.get('description', "No description provided")
+        self._definition = None
 
     def _configure(self, **kwargs):
         """Set instance-specific configurations"""
@@ -92,9 +103,28 @@ class BaseTool(ABC):
             self.api_key = ToolConfig.get(f"{self.API_SERVICE}_api_key")
 
     @property
-    @abstractmethod
     def definition(self):
-        pass
+        """Return the tool's definition"""
+        if self._definition is None:
+            # Provide a default definition if not set
+            self._definition = {
+                "type": "function",
+                "function": {
+                    "name": self.name,
+                    "description": self.description,
+                    "parameters": {
+                        "type": "object",
+                        "properties": {},
+                        "required": []
+                    }
+                }
+            }
+        return self._definition
+
+    @definition.setter
+    def definition(self, value):
+        """Set the tool's definition"""
+        self._definition = value
 
     @property
     def output_schema(self):
@@ -249,3 +279,156 @@ class BaseTool(ABC):
         # Instantiate and return the tool
         tool = ExportedTool()
         return tool
+
+    def export_to_bedrock(self, lambda_arn: str = None) -> dict:
+        """
+        Export tool as Bedrock Agent tool configuration
+        """
+        if not _HAS_BEDROCK:
+            raise RuntimeError("boto3 not installed. Install with `pip install boto3`")
+
+        openapi_schema = self._generate_openapi_schema()
+
+        # Create tool configuration
+        tool_config = {
+            "toolName": self.name,
+            "description": self.definition['function']['description'],
+            "openAPISchema": json.dumps(openapi_schema),
+            "lambdaArn": lambda_arn or self._create_bedrock_lambda()
+        }
+
+        return tool_config
+
+    def _generate_openapi_schema(self) -> dict:
+        """Convert Gofannon definition to OpenAPI schema"""
+        params = self.definition['function']['parameters']
+
+        openapi_schema = {
+            "openapi": "3.0.0",
+            "info": {
+                "title": self.name,
+                "version": "1.0.0"
+            },
+            "paths": {
+                f"/{self.name}": {
+                    "post": {
+                        "description": self.definition['function']['description'],
+                        "requestBody": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            param: {
+                                                "type": props['type'],
+                                                "description": props['description']
+                                            }
+                                            for param, props in params['properties'].items()
+                                        },
+                                        "required": params.get('required', [])
+                                    }
+                                }
+                            }
+                        },
+                        "responses": {
+                            "200": {
+                                "description": "Successful operation",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "result": {"type": "string"}
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return openapi_schema
+
+    def _create_bedrock_lambda(self) -> str:
+        """Create Lambda function for Bedrock integration"""
+        if not _HAS_BEDROCK:
+            raise RuntimeError("boto3 required for Lambda creation")
+
+        lambda_client = boto3.client('lambda')
+        role_arn = self._get_or_create_bedrock_role()
+
+        # Generate Lambda code
+        lambda_code = f'''  
+import json  
+from {self.__class__.__module__} import {self.__class__.__name__}  
+  
+def lambda_handler(event, context):  
+    tool = {self.__class__.__name__}()  
+    result = tool.fn(**event)  
+    return {{  
+        'statusCode': 200,  
+        'body': json.dumps({{'result': result}})  
+    }}  
+    '''
+
+        try:
+            response = lambda_client.create_function(
+                FunctionName=f"gofannon-{self.name}",
+                Runtime='python3.10',
+                Role=role_arn,
+                Handler='lambda_function.lambda_handler',
+                Code={
+                    'ZipFile': create_zip_package(lambda_code)
+                },
+                Description=f"Gofannon tool: {self.name}",
+                Timeout=30,
+                MemorySize=256
+            )
+            return response['FunctionArn']
+        except ClientError as e:
+            raise RuntimeError(f"Failed to create Lambda: {e}")
+
+    def _get_or_create_bedrock_role(self) -> str:
+        """Get or create IAM role for Bedrock integration"""
+        iam = boto3.client('iam')
+        role_name = 'gofannon-bedrock-execution-role'
+
+        try:
+            return iam.get_role(RoleName=role_name)['Role']['Arn']
+        except iam.exceptions.NoSuchEntityException:
+            assume_policy = {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Principal": {"Service": "bedrock.amazonaws.com"},
+                        "Action": "sts:AssumeRole"
+                    }
+                ]
+            }
+
+        iam.create_role(
+            RoleName=role_name,
+            AssumeRolePolicyDocument=json.dumps(assume_policy))
+
+        iam.attach_role_policy(
+            RoleName=role_name,
+            PolicyArn='arn:aws:iam::aws:policy/AWSLambda_FullAccess')
+
+        return iam.get_role(RoleName=role_name)['Role']['Arn']
+
+# Helper function for AWS
+def create_zip_package(code: str) -> bytes:
+    """Create in-memory ZIP package for Lambda deployment"""
+    from io import BytesIO
+    import zipfile
+
+    buffer = BytesIO()
+    with zipfile.ZipFile(buffer, 'w') as z:
+        z.writestr('lambda_function.py', code)
+    buffer.seek(0)
+    return buffer.read()
+
