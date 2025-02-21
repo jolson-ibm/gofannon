@@ -444,16 +444,16 @@ def lambda_handler(event, context):
         try:
             return iam.get_role(RoleName=role_name)['Role']['Arn']
         except iam.exceptions.NoSuchEntityException:
-            assume_policy = {{
+            assume_policy = {
                 "Version": "2012-10-17",
                 "Statement": [
-                    {{
+                    {
                         "Effect": "Allow",
-                        "Principal": {{"Service": "bedrock.amazonaws.com"}},
+                        "Principal": {"Service": "bedrock.amazonaws.com"},
                         "Action": "sts:AssumeRole"
-                    }}
+                    }
                 ]
-            }}
+            }
 
         iam.create_role(
             RoleName=role_name,
