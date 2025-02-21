@@ -352,51 +352,6 @@ class BaseTool(ABC):
 
         return openapi_schema
 
-    def import_from_bedrock(self, bedrock_tool: dict):
-        """
-        Import Bedrock tool configuration
-        """
-        schema = json.loads(bedrock_tool['openAPISchema'])
-        path = list(schema['paths'].keys())[0]
-        operation = schema['paths'][path]['post']
-
-        self.name = bedrock_tool['toolName']
-        self.description = operation['description']
-
-        # Convert OpenAPI schema to Gofannon definition
-        params = operation['requestBody']['content']['application/json']['schema']
-
-        self._definition = {
-            "type": "function",
-            "function": {
-                "name": self.name,
-                "description": self.description,
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        param: {
-                            "type": props['type'],
-                            "description": props.get('description', f"Parameter {param}")
-                        }
-                        for param, props in params['properties'].items()
-                    },
-                    "required": params.get('required', [])
-                }
-            }
-        }
-
-        # Create wrapper for Lambda execution
-        def bedrock_fn(**kwargs):
-            client = boto3.client('lambda')
-            response = client.invoke(
-                FunctionName=bedrock_tool['lambdaArn'],
-                Payload=json.dumps(kwargs)
-            )
-            return json.load(response['Payload'])
-
-        self.fn = bedrock_fn
-    # Add to BaseTool class in gofannon/base/__init__.py
-
     def _create_bedrock_lambda(self) -> str:
         """Create Lambda function for Bedrock integration"""
         if not _HAS_BEDROCK:
