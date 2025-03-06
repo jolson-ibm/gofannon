@@ -139,7 +139,7 @@ class BedrockMixin:
             "agentPolicyARN": self.agent_role_policy_arn,
             "agentActionGroup": self.agent_action_group_id,
         }
-        self.logger.log("Done!", self.__class__.__name__)
+        self.logger.info("Done!", self.__class__.__name__)
         return output_manifest
 
     # ####################################################################################
