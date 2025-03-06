@@ -147,7 +147,8 @@ class BedrockMixin:
     def _generate_openapi_schema(self) -> dict:
         """Convert Gofannon definition to OpenAPI schema"""
         params = self.definition["function"]["parameters"]
-
+        if not "properties" in params:
+            params["properties"] = {}
         openapi_schema = {
             "openapi": "3.0.0",
             "info": {"title": self.name, "version": "1.0.0"},
@@ -161,13 +162,13 @@ class BedrockMixin:
                                     "schema": {
                                         "type": "object",
                                         "properties": {
-                                            # param: {
-                                            #    "type": props["type"],
-                                            #    "description": props["description"],
-                                            # }
-                                            # for param, props in params[
-                                            #    "properties"
-                                            # ].items()
+                                            param: {
+                                                "type": props["type"],
+                                                "description": props["description"],
+                                            }
+                                            for param, props in params[
+                                                "properties"
+                                            ].items()
                                         },
                                         "required": params.get("required", []),
                                     }
