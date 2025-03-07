@@ -31,10 +31,10 @@ else:
     bedrock_config = {
         "lambdaARN": "arn:aws:lambda:us-east-1:843382705282:function:gofannon_demo_iss_locator",
         "lambdaRoleName": "gofannon_demo_bedrock_lambda_execution_role",
-        "agentId": "9A5ZZHOYA7",
+        "agentId": "HJVJBDR7JJ",
         "agentRoleName": "gofannon_demo_bedrock_agent_execution_role",
         "agentPolicyARN": "arn:aws:iam::843382705282:policy/gofannon_demo_bedrock_agent_allow_model",
-        "agentActionGroup": "RWPE6MPFUD",
+        "agentActionGroup": "ZMQOSJBY7V",
     }
 
     iss_locator = IssLocator()

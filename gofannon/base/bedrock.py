@@ -84,7 +84,6 @@ class BedrockMixin:
             error = f"Error getting AWS account number. Client error: {e}"
             self.logger.error(error)
             raise RuntimeError(error)
-
         except Exception as e:
             error = f"Error getting AWS account number. Unexpected error: {e}"
             self.logger.error(error)
@@ -103,6 +102,7 @@ class BedrockMixin:
         #               AWSLambdaBasicExecutionRole allowing the lambda to use CloudWatch
 
         self.logger.info("\tCreating lambda...", self.__class__.__name__)
+
         self.lambda_arn = self._create_bedrock_lambda()
 
         # Creates:
@@ -141,8 +141,6 @@ class BedrockMixin:
         }
         self.logger.info("Done!", self.__class__.__name__)
         return output_manifest
-
-    # ####################################################################################
 
     def _generate_openapi_schema(self) -> dict:
         """Convert Gofannon definition to OpenAPI schema"""
@@ -197,7 +195,6 @@ class BedrockMixin:
 
         return openapi_schema
 
-    #####################################################################################
     def _create_bedrock_lambda(self) -> str:
         """Create Lambda function for Bedrock integration"""
 
