@@ -208,7 +208,7 @@ class BedrockMixin:
         # See: https://docs.aws.amazon.com/lambda/latest/dg/python-package.html
 
         # TODO: verify the path here
-        command = f"../../scripts/build_lambda.sh {self.temp_build_root} {self.python_runtime_version.replace("python","")} {self.app_id}"
+        command = f"""../../scripts/build_lambda.sh {self.temp_build_root} {self.python_runtime_version.replace("python","")} {self.app_id}"""
         try:
             process = subprocess.Popen(
                 command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
