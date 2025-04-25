@@ -12,13 +12,13 @@ This can be deployed on AWS Bedrock following the example in `./tests/integratio
 
 The full implementation, along with its workflow, once deployed:
 
-[./images/bedrock.png]
+![alt text](./images/bedrock.png)
 
 The Gofannon tool is wrapped in an AWS Lambda, attached to a newly created agent, which is then registered and accessible seamlessly from an LLM. This is all done with the Gofannon Bedrock framework. 
 
 In order to get the above to work together properly, the following AWS IAM permissions are also deployed:
 
-[./images/bedrock2.png]
+![alt text](./images/bedrock2.png)
 
 ### Deployment Prerequisites
 
@@ -43,11 +43,11 @@ In order to get the above to work together properly, the following AWS IAM permi
 
 4. Using the AWS user interface, access Bedrock -> Agents. You should see an agent named `gofannon_demo_ISSLocatorAgent`:
 
-[./images/bedrock3.png]
+![alt text](./images/bedrock3.png)
 
 5. On the agent screen, there is a chat interface you can use to test the agent:
 
-[./images/bedrock4.png]
+![alt text](./images/bedrock4.png)
 
 6. Finally, tear down the stack, removing all deployed components. Modify `python test_boto3.py` replacing `buid = True` with `build = False` and replace the `bedrock_config` dict with the values that were output in step #3.
 
