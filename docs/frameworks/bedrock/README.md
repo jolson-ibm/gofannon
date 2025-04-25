@@ -1,10 +1,10 @@
 # AWS Bedrock
 
-[Bedrock](https://aws.amazon.com/bedrock/) is Amazon Web Service's (AWS) generative AI application platform. It has an agent framework that can be used to deploy Gofannon developed tools
+[Bedrock](https://aws.amazon.com/bedrock/) is Amazon Web Service's (AWS) generative AI application platform. It has an agent framework that can be used to deploy Gofannon developed tools.
 
 ## Example - ISS Tracker
 
-Gofannon has an [existing tool](https://github.com/The-AI-Alliance/gofannon/blob/main/docs/open_notify_space/open_notify_space.md) to interface with [Open Notify Space](http://open-notify.org/Open-Notify-API/ISS-Location-Now/), a service that provides an API that returns the current latitude and longitude of the International Space Station (ISS)
+Gofannon has an [existing tool](https://github.com/The-AI-Alliance/gofannon/blob/main/docs/open_notify_space/open_notify_space.md) to interface with [Open Notify Space](http://open-notify.org/Open-Notify-API/ISS-Location-Now/), a service that provides an API that returns the current latitude and longitude of the International Space Station (ISS).
 
 This can be deployed on AWS Bedrock following the example in `./tests/integration/test_boto3.py`. This code uses the AWS boto3 frameowrk to deploy (and tear down) an agent wrapping the function, allowing the user to interact with a LLM querying it for the real time location of the ISS. This can be further refinded for a pratical use case of sending an alert if the ISS is about to pass within viewing distance. 
 
