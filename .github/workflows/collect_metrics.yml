@@ -77,7 +77,7 @@ jobs:
           CURRENT_DATE=$(date +%Y-%m-%d)  
   
           # Construct the S3 destination path  
-          S3_PATH="s3://${AWS_S3_BUCKET}/service=github/repository=${REPOSITORY_NAME_FORMATTED}/date=${CURRENT_DATE}/${S3_DESTINATION_FILENAME}"  
+          S3_PATH="s3://${AWS_S3_BUCKET}/service=github_tmp/repository=${REPOSITORY_NAME_FORMATTED}/date=${CURRENT_DATE}/${S3_DESTINATION_FILENAME}"  
   
           echo "Uploading '$SOURCE_FILE' to '$S3_PATH'..."  
           aws s3 cp "$SOURCE_FILE" "$S3_PATH"  
