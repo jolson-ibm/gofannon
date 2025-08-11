@@ -12,7 +12,7 @@ jobs:
     permissions:  
       contents: write  
       id-token: write  
-  
+    if: github.repository == 'The-AI-Alliance/gofannon'
     steps:  
       - uses: actions/checkout@v4  
         with:  
