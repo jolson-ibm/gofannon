@@ -13,6 +13,7 @@ permissions:
 jobs:
   collect-stats:
     runs-on: ubuntu-latest
+    if: github.repository == 'The-AI-Alliance/gofannon'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

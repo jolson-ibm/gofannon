@@ -9,6 +9,7 @@ on:
 jobs:
   markdown-link-check:
     runs-on: ubuntu-latest
+    if: github.repository == 'The-AI-Alliance/gofannon'
     steps:
       - uses: actions/checkout@v3
 
