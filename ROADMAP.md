@@ -7,31 +7,12 @@
 -->
 
 ## Complete ✅
-- [Closes #327 - GitHUb Actions Firing in Forked Repositories and Failing](https://github.com/The-AI-Alliance/gofannon/pull/328)
-- [Pdf plumber bug](https://github.com/The-AI-Alliance/gofannon/pull/324)
-- [vibe fix to adk bug](https://github.com/The-AI-Alliance/gofannon/pull/319)
-- [Add VertexAI example](https://github.com/The-AI-Alliance/gofannon/pull/314)
-- [remove pydantic warnings](https://github.com/The-AI-Alliance/gofannon/pull/309)
-- [[infra] add readthedocs.yaml](https://github.com/The-AI-Alliance/gofannon/pull/303)
-- [Add automated Analytics collection](https://github.com/The-AI-Alliance/gofannon/pull/281)
-- [[Unit Test] Llamastack Framework](https://github.com/The-AI-Alliance/gofannon/pull/280)
-- [[Tool] file.ReadFile](https://github.com/The-AI-Alliance/gofannon/pull/270)
-- [Langchain and APOD Example](https://github.com/The-AI-Alliance/gofannon/pull/251)
-- [Fix typo incompatible](https://github.com/The-AI-Alliance/gofannon/pull/239)
-- [Add the Alliance CoC](https://github.com/The-AI-Alliance/gofannon/pull/230)
-- [Fix leaderboard issues](https://github.com/The-AI-Alliance/gofannon/pull/227)
-- [Fix Release Notes](https://github.com/The-AI-Alliance/gofannon/pull/226)
+No completed items
+
 
 ## Under Construction 🚧
-- [[Framework Proposal] LlamaIndex](https://github.com/The-AI-Alliance/gofannon/issues/301)
-- [[Framework Proposal] The non-framework integration](https://github.com/The-AI-Alliance/gofannon/issues/300)
-- [[Function Proposal] Marginalia Search](https://github.com/The-AI-Alliance/gofannon/issues/295)
-- [[Bug] ./github/scripts/collect_metrics.py parquet output not consumable by AWS Athena](https://github.com/The-AI-Alliance/gofannon/issues/289)
+No items in progress
+
 
 ## In the Roadmap 📅
-- [[Issue] There should be an extra 'all' to install all extras](https://github.com/The-AI-Alliance/gofannon/issues/323)
-- [[Issue] Implement Static `manifest.json` for Gofannon Tool Discovery](https://github.com/The-AI-Alliance/gofannon/issues/320)
-- [[Bug] PR Labeler: curl (3) URL rejected when adding first time contributor label](https://github.com/The-AI-Alliance/gofannon/issues/292)
-- [[DEMO] Langchain + smolagents tools into an MCP server](https://github.com/The-AI-Alliance/gofannon/issues/288)
-- [Typo in Quickstart](https://github.com/The-AI-Alliance/gofannon/issues/256)
-- [[Framework Proposal] Langgraph](https://github.com/The-AI-Alliance/gofannon/issues/237)
+No upcoming items
