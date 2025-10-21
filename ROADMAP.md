@@ -7,54 +7,12 @@
 -->
 
 ## Complete ✅
-- [Handle saved agents better](https://github.com/The-AI-Alliance/gofannon/pull/371)
-- [351 - Implement Abstract Data Store](https://github.com/The-AI-Alliance/gofannon/pull/367)
-- [Add swagger/openapi spec as tool source, sorry for the large file dump.](https://github.com/The-AI-Alliance/gofannon/pull/350)
-- [Gofannon Ramen](https://github.com/The-AI-Alliance/gofannon/pull/348)
-- [Feat finish poc](https://github.com/The-AI-Alliance/gofannon/pull/347)
-- [Add button for setting what model will compose agent](https://github.com/The-AI-Alliance/gofannon/pull/346)
-- [343 Implement Tool Discovery](https://github.com/The-AI-Alliance/gofannon/pull/344)
-- [Create Agent Flow](https://github.com/The-AI-Alliance/gofannon/pull/342)
-- [Revert "339 - Create Agent Flow"](https://github.com/The-AI-Alliance/gofannon/pull/341)
-- [339 - Create Agent Flow](https://github.com/The-AI-Alliance/gofannon/pull/340)
-- [336 - Basic Chat Works](https://github.com/The-AI-Alliance/gofannon/pull/337)
-- [WebUI](https://github.com/The-AI-Alliance/gofannon/pull/335)
-- [Create manifest.json](https://github.com/The-AI-Alliance/gofannon/pull/329)
-- [Closes #327 - GitHUb Actions Firing in Forked Repositories and Failing](https://github.com/The-AI-Alliance/gofannon/pull/328)
-- [Pdf plumber bug](https://github.com/The-AI-Alliance/gofannon/pull/324)
-- [vibe fix to adk bug](https://github.com/The-AI-Alliance/gofannon/pull/319)
-- [Add VertexAI example](https://github.com/The-AI-Alliance/gofannon/pull/314)
-- [remove pydantic warnings](https://github.com/The-AI-Alliance/gofannon/pull/309)
-- [[infra] add readthedocs.yaml](https://github.com/The-AI-Alliance/gofannon/pull/303)
-- [Add automated Analytics collection](https://github.com/The-AI-Alliance/gofannon/pull/281)
-- [[Unit Test] Llamastack Framework](https://github.com/The-AI-Alliance/gofannon/pull/280)
-- [[Tool] file.ReadFile](https://github.com/The-AI-Alliance/gofannon/pull/270)
+No completed items
+
 
 ## Under Construction 🚧
-- [Deploy to Firebase](https://github.com/The-AI-Alliance/gofannon/issues/355)
-- [WatsonX agent](https://github.com/The-AI-Alliance/gofannon/issues/352)
-- [[Framework Proposal] LlamaIndex](https://github.com/The-AI-Alliance/gofannon/issues/301)
-- [[Framework Proposal] The non-framework integration](https://github.com/The-AI-Alliance/gofannon/issues/300)
-- [[Function Proposal] Marginalia Search](https://github.com/The-AI-Alliance/gofannon/issues/295)
-- [[Bug] ./github/scripts/collect_metrics.py parquet output not consumable by AWS Athena](https://github.com/The-AI-Alliance/gofannon/issues/289)
+No items in progress
+
 
 ## In the Roadmap 📅
-- [Logging service](https://github.com/The-AI-Alliance/gofannon/issues/366)
-- [Placeholder for where to lodge generated tool code](https://github.com/The-AI-Alliance/gofannon/issues/365)
-- [Accept req's docs as initial input](https://github.com/The-AI-Alliance/gofannon/issues/364)
-- [Templated webapp for use cases](https://github.com/The-AI-Alliance/gofannon/issues/363)
-- [Deploy agent to REST](https://github.com/The-AI-Alliance/gofannon/issues/362)
-- [Deploy agent to MCP](https://github.com/The-AI-Alliance/gofannon/issues/361)
-- [Deploy agent to A2A](https://github.com/The-AI-Alliance/gofannon/issues/360)
-- [Deploy agent](https://github.com/The-AI-Alliance/gofannon/issues/359)
-- [Deploy to OpenShift](https://github.com/The-AI-Alliance/gofannon/issues/358)
-- [Deploy to K8s](https://github.com/The-AI-Alliance/gofannon/issues/357)
-- [Deploy to Amplify](https://github.com/The-AI-Alliance/gofannon/issues/356)
-- [Deploying webapp to frameworks](https://github.com/The-AI-Alliance/gofannon/issues/354)
-- [Make issue template for webapp](https://github.com/The-AI-Alliance/gofannon/issues/353)
-- [[web] Update provider list.](https://github.com/The-AI-Alliance/gofannon/issues/338)
-- [[Bug] Commit Files Doesn't Work](https://github.com/The-AI-Alliance/gofannon/issues/333)
-- [[Issue] github.get_repo_contents should have a maximum return size.](https://github.com/The-AI-Alliance/gofannon/issues/331)
-- [[Issue] There should be an extra 'all' to install all extras](https://github.com/The-AI-Alliance/gofannon/issues/323)
-- [[Bug] PR Labeler: curl (3) URL rejected when adding first time contributor label](https://github.com/The-AI-Alliance/gofannon/issues/292)
-- [[DEMO] Langchain + smolagents tools into an MCP server](https://github.com/The-AI-Alliance/gofannon/issues/288)
+No upcoming items
